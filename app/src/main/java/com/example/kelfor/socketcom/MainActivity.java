@@ -123,57 +123,53 @@ import java.net.Socket;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.TextView;
 
-public class MainActivity extends Activity implements Runnable {
+import org.w3c.dom.Text;
 
-    EditText show;
+public class MainActivity extends Activity implements Runnable,View.OnClickListener {
+
+   private EditText show;
     private PrintWriter out;
     BufferedReader br;
     Button btnSend;
     Socket socket=null;
+    private TextView textView = null;
+    private Handler handler = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         show = (EditText)findViewById(R.id.edit);
-        show.setText("来自服务器的数据：");
+        show.setText("发至服务器的数据：");
         btnSend = (Button)findViewById(R.id.btnSend);
+        textView = (TextView)findViewById(R.id.textView);
+        textView.setText("来自服务器的数据：");
 
-
-
-       // } catch (IOException e) {
-       //     e.printStackTrace();
-      //  }
-//
-//        new Thread()
-//        {
-//            @Override
-//            public void run()
-//            {
-//
-//            }
-//        }.start();
+        handler = new Handler()//Use this to update the textView!!!
+        {
+            @Override
+            public void handleMessage(Message msg)
+            {
+                textView.setText(msg.obj.toString());
+            }
+        };
         new Thread(MainActivity.this).start();
 
         btnSend.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //  switch (v.getId())
                 {
-                    //case R.id.btnSend:
-                    // show.setText("SendOK");
-
                     String msg = show.getText().toString();
                     out.print(msg);
                     out.flush();//Very Important!
-                    //  break;
-                    // default:
-                    //     break;
                 }
             }
         });
@@ -182,65 +178,25 @@ public class MainActivity extends Activity implements Runnable {
 
     @Override
     public void run() {
-
         try {
             //建立连接到远程服务器的Socket
             socket = new Socket("100.64.148.130",9527);
-
             out = new PrintWriter( socket.getOutputStream());
             //将Socket对应的输入流包装成BufferedReader
-
              br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             
             try {
                 while (true) {
-                    if (!socket.isClosed()) {
-                        // show.setText("sdfsdfdsfsdfsdfdsfsdfdsfdsNOCLOSED");
-
-                        if (socket.isConnected()) {
-
-                          ////  i = i+1;
-                       //      show.setText(String.format("Connected" + i ));
-
                             String str = br.readLine();
                             if(str!=null)
                             {
-                                show.setText("HH");
+                               Message msg = new Message();
+                                msg.obj  = str;
+                                msg.what = 0x88;
+                                handler.sendMessage(msg);
 
                             }
-
-                            //进行普通的I/O操作
-
-//                                    if(br != null)
-//                                        show.setText("Read OK");
-//                                    i = br.read();
-//                                    show.setText(String.format("Connected" + i ));
-//                                    String line = br.readLine();
-//
-//
-//
-//
-//                                    show.setText(String.format("Connected" + i ));
-//                            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-//                                    socket.getOutputStream())), true);
-//                            String msg = show.getText().toString();
-//                            out.print(msg);
-//                            //out.flush();
-//                            //show.setText("None"+line);
-//                            // br.close();
-//                            i = i+1;
-//
-//                            out.close();
-//                            //sleep(10);
-                        }
-                        else {
-                            show.setText("Disconnected");
-
-                            //sleep(2000);
                         }
 
-                    }
-                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -254,6 +210,11 @@ public class MainActivity extends Activity implements Runnable {
             show.setText("Connect Failed");
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
 //
