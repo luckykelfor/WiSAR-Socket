@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SocketCom</string>
+    <string name="message">Edit Here</string>
+    <string name="hello">Hello TCP</string>
+    <string name="send">Send</string>
+    <string name="connect">Connect</string>
+</resources>
