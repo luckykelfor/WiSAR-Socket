@@ -4,4 +4,6 @@
     <string name="hello">Hello TCP</string>
     <string name="send">Send</string>
     <string name="connect">Connect</string>
+    <string name="button_connect">连接</string>
+    <string name="button_send">发送</string>
 </resources>

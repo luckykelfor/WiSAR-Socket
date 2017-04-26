@@ -5,31 +5,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.kelfor.socketcom.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <!--tools:layout_editor_absoluteX="148dp"-->
+        <!--tools:layout_editor_absoluteY="404dp"-->
+
 
     <EditText
-        android:id="@+id/edit"
+        android:id="@+id/edit_sendMsg"
         android:layout_width="368dp"
         android:layout_height="wrap_content"
         android:inputType="text"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="213dp" />
 
-    <Button
-        android:id="@+id/btnSend"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/server"
+        android:layout_width="368dp"
         android:layout_height="wrap_content"
-        android:text="Button"/>
-        <!--tools:layout_editor_absoluteX="148dp"-->
-        <!--tools:layout_editor_absoluteY="404dp"-->
+        android:inputType="text"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="213dp" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="81dp">
+
+        <Button
+            android:id="@+id/btnConnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="35dp"
+            android:layout_marginStart="22dp"
+            android:text="@string/button_connect">
+
+        </Button>
+
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btnConnect"
+            android:layout_marginStart="51dp"
+            android:layout_toEndOf="@+id/btnConnect"
+            android:text="@string/button_send"
+
+            android:layout_alignTop="@+id/btnConnect" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="232dp"
+        android:layout_width="match_parent"
         android:layout_height="58dp"
-        android:text="TextView"/>
-        <!--tools:layout_editor_absoluteX="76dp"-->
+        android:layout_weight="0.36"
+        android:text="TextView" />
+
+    <!--tools:layout_editor_absoluteX="76dp"-->
         <!--tools:layout_editor_absoluteY="321dp" />-->
 
 </LinearLayout>

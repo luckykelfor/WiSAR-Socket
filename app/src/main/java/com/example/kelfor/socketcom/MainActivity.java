@@ -122,98 +122,148 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import org.w3c.dom.Text;
 
-public class MainActivity extends Activity implements Runnable,View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
 
-   private EditText show;
+    private EditText sendMsg;
     private PrintWriter out;
-    BufferedReader br;
-    Button btnSend;
-    Socket socket=null;
+    private BufferedReader br;
+    private Button btnSend,btnConnect;
+    private Socket socket=null;
     private TextView textView = null;
     private Handler handler = null;
+    private EditText serverIP = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        show = (EditText)findViewById(R.id.edit);
-        show.setText("发至服务器的数据：");
+        sendMsg = (EditText)findViewById(R.id.edit_sendMsg);
+        sendMsg.setText("发至服务器的数据：");
         btnSend = (Button)findViewById(R.id.btnSend);
+        btnConnect = (Button)findViewById(  R.id.btnConnect);
+
         textView = (TextView)findViewById(R.id.textView);
         textView.setText("来自服务器的数据：");
+
+        serverIP = (EditText)findViewById(R.id.server);
 
         handler = new Handler()//Use this to update the textView!!!
         {
             @Override
             public void handleMessage(Message msg)
             {
+              //  showToast(msg.obj.toString());
                 textView.setText(msg.obj.toString());
             }
         };
-        new Thread(MainActivity.this).start();
+        //  new Thread(MainActivity.this).start();
 
-        btnSend.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                {
-                    String msg = show.getText().toString();
-                    out.print(msg);
-                    out.flush();//Very Important!
-                }
-            }
-        });
-
+        btnSend.setOnClickListener(this);
+        btnConnect.setOnClickListener(this);
     }
 
-    @Override
-    public void run() {
-        try {
-            //建立连接到远程服务器的Socket
-            socket = new Socket("100.64.148.130",9527);
-            out = new PrintWriter( socket.getOutputStream());
-            //将Socket对应的输入流包装成BufferedReader
-             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            try {
-                while (true) {
-                            String str = br.readLine();
-                            if(str!=null)
-                            {
-                               Message msg = new Message();
-                                msg.obj  = str;
-                                msg.what = 0x88;
-                                handler.sendMessage(msg);
+    private Thread tcpThread = new Thread()
+    {
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public void run() {
 
-                            }
+                //建立连接到远程服务器的Socket
+//            socket = new Socket("100.64.148.130",9527);
+//            out = new PrintWriter( socket.getOutputStream());
+//            //将Socket对应的输入流包装成BufferedReader
+//             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                try {
+                    while (true) {
+
+                        String str = br.readLine();
+
+                    //    char [] strl
+                     //   br.read()
+                        if(str!=null)
+                        {
+                            showToast(str);
+                            Message msg = new Message();
+                            msg.obj  = str;
+                            msg.what = 0x88;
+                            handler.sendMessage(msg);
+
                         }
 
 
-            } catch (Exception e) {
+
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            try {
+                socket.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-
-
-
-            socket.close();
-        } catch (Exception e) {
-            show.setText("Connect Failed");
-            e.printStackTrace();
         }
+    };
+    public void showToast(final String msg) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-
     @Override
     public void onClick(View v) {
+        switch (v.getId())
+        {
+            case R.id.btnConnect:
+            {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String ip = serverIP.getText().toString().trim();
+
+                            showToast("连接成功");
+                            socket = new Socket(ip,9527);
+                            out = new PrintWriter( socket.getOutputStream());
+                            //将Socket对应的输入流包装成BufferedReader
+                            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                            tcpThread.start();
+
+                        } catch (Exception e) {
+                        }
+                    }
+                }).start();
+                break;
+            }
+            case R.id.btnSend:
+            {
+                String msg = sendMsg.getText().toString();
+                out.print(msg);
+                out.flush();//Very Important!
+                break;
+            }
+            default:break;
+        }
 
     }
 

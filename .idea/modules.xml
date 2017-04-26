@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SocketCom.iml" filepath="$PROJECT_DIR$/SocketCom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/WiSAR-Socket.iml" filepath="$PROJECT_DIR$/WiSAR-Socket.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
